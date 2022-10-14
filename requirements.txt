@@ -3,3 +3,4 @@ uvicorn
 starlette
 pydantic
 sqlalchemy
+psycopg2-binary
