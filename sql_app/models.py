@@ -1,5 +1,7 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date, Enum
 from sqlalchemy.orm import relationship
+
+from sql_app.enums import DeviceState, DeviceType, NotificationType
 from .database import Base
 
 
@@ -31,7 +33,7 @@ class PropertyOwner(Base):
 
     property_owner_id = Column(Integer, ForeignKey("person.id_number"), primary_key=True)
     contract_date = Column(Date)
-    notification_style = Column(Enum)
+    notification_style = Column(Enum(NotificationType, default=NotificationType.TXT_MSG))
     person = relationship("Person", back_populates="property_owners")
     buildings = relationship("Building", back_populates="owner")
 
@@ -50,7 +52,7 @@ class Device(Base):
     __tablename__ = "device"
 
     device_id = Column(Integer, primary_key=True)
-    device_type = Column(Enum)
-    state = Column(Enum)
+    device_type = Column(Enum(DeviceType, default=DeviceType.SENSOR))
+    state = Column(Enum(DeviceState, default=DeviceState.OFF))
     building_id = Column(Integer, ForeignKey("building.building_id"))
     building = relationship("Building", back_populates="devices")
