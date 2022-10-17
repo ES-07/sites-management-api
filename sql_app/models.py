@@ -44,9 +44,9 @@ class Building(Base):
     address = Column(String)
     security_manager_id = Column(Integer, ForeignKey("securitymanager.worker_id"))
     owner_id = Column(Integer, ForeignKey("propertyowner.property_owner_id"))
-    security_manager =relationship("Building", back_populates="buildings")
+    security_manager =relationship("SecurityManager", back_populates="buildings")
     owner = relationship("PropertyOwner", back_populates="buildings")
-    devices = relationship("Devices", back_populates="building")
+    devices = relationship("Device", back_populates="building")
 
 class Device(Base):
     __tablename__ = "device"
