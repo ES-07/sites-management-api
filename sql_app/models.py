@@ -1,7 +1,7 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date, Enum
 from sqlalchemy.orm import relationship
 
-from sql_app.enums import DeviceState, DeviceType, NotificationType
+from sql_app.enums import DeviceState, Notification_type
 from .database import Base
 
 
@@ -21,19 +21,18 @@ class Person(Base):
 
 #acho que bastava um enum para distinguir
 
-class SecurityManager(Base):
+class SecurityManager(Person):
     __tablename__ = "securitymanager"
 
     worker_id = Column(Integer, ForeignKey("person.id_number"), primary_key=True)
     person = relationship("Person", back_populates="security_managers")
-    buildings =relationship("Building", back_populates="security_manager")
 
-class PropertyOwner(Base):
+class PropertyOwner(Person):
     __tablename__ = "propertyowner"
 
     property_owner_id = Column(Integer, ForeignKey("person.id_number"), primary_key=True)
     contract_date = Column(Date)
-    notification_style = Column(Enum(NotificationType, default=NotificationType.TXT_MSG))
+    notification_type = Column(Enum(Notification_type, default=Notification_type.TXT_MSG))
     person = relationship("Person", back_populates="property_owners")
     buildings = relationship("Building", back_populates="owner")
 
@@ -42,17 +41,25 @@ class Building(Base):
 
     building_id = Column(Integer, primary_key=True)
     address = Column(String)
-    security_manager_id = Column(Integer, ForeignKey("securitymanager.worker_id"))
+    name = Column(String)
     owner_id = Column(Integer, ForeignKey("propertyowner.property_owner_id"))
-    security_manager =relationship("SecurityManager", back_populates="buildings")
     owner = relationship("PropertyOwner", back_populates="buildings")
-    devices = relationship("Device", back_populates="building")
+    cameras = relationship("Camera", back_populates="building")
+    sensors = relationship("Sensor", back_populates="building")
 
-class Device(Base):
-    __tablename__ = "device"
+class Camera(Base):
+    __tablename__ = "camera"
 
-    device_id = Column(Integer, primary_key=True)
-    device_type = Column(Enum(DeviceType, default=DeviceType.SENSOR))
+    camera_id = Column(Integer, primary_key=True)
+    specifications = Column(String)
     state = Column(Enum(DeviceState, default=DeviceState.OFF))
     building_id = Column(Integer, ForeignKey("building.building_id"))
-    building = relationship("Building", back_populates="devices")
+    building = relationship("Building", back_populates="cameras")
+
+class Sensor(Base):
+    __tablename__ = "sensor"
+
+    sensor_id = Column(Integer, primary_key=True)
+    state = Column(Enum(DeviceState, default=DeviceState.OFF))
+    building_id = Column(Integer, ForeignKey("building.building_id"))
+    building = relationship("Building", back_populates="sensors")

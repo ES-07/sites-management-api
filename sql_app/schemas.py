@@ -1,113 +1,87 @@
-import datetime
+from datetime import datetime, date
 import enum
 from typing import List
 from enum import Enum
+from fastapi import Security
 
 from pydantic import BaseModel
 from sqlalchemy import Date
-from .enums import DeviceType, DeviceState, NotificationType
 
-## ENUMS
-
-
-
-## DEVICE
-
-class DeviceBase(BaseModel):
-    device_id: int
+from sql_app.models import PropertyOwner
+from .enums import DeviceState, Notification_type
 
 
-class DeviceCreate(DeviceBase):
-    pass
-
-
-class Device(DeviceBase):
-    device_type: DeviceType
-    state: DeviceState
-    
-    #nao sei como meter aqui a pessoa
-
-    class Config:
-        orm_mode = True
-
-## BUILDINGS
-
-class BuildingBase(BaseModel):
-    building_id: int
-
-
-class BuildingCreate(BuildingBase):
-    pass
-
-
-class Building(BuildingBase):
-    address:str
-    devices: List[Device]
-    #nao sei como meter aqui a pessoa
-
-    class Config:
-        orm_mode = True
-
-## SECURITY MANAGER
-
-
-class SecurityManagerBase(BaseModel):
-    worker_id: int
-
-
-class SecurityManagerCreate(SecurityManagerBase):
-    pass
-
-
-class SecurityManager(SecurityManagerBase):
-    worker_id: int
-    buildings: List[Building] = []
-    #nao sei como meter aqui a pessoa
-
-    class Config:
-        orm_mode = True
-
-## PROPERTY OWNER
-
-
-class PropertyOwnerBase(BaseModel):
-    propery_owner_id: int
-
-
-class PropertyOwnerCreate(SecurityManagerBase):
-    pass
-
-
-class PropertyOwner(SecurityManagerBase):
-    property_owner_id: int
-    contract_date: datetime.date
-    notification_type :NotificationType 
-    buildings: List[Building] = []
-    #nao sei como meter aqui a pessoa
-
-    class Config:
-        orm_mode = True
+'''
+ TO DO, IMPLEMENTAR CAMERAS E SENSORES
+ '''
 
 
 ## PERSON
 
 class PersonBase(BaseModel):
-    name: str
     email: str
+    password: str
+    id: int
+    name: str
     address: str
     cellphone : int
-    #é suposto meter aqui a data de nascimento?
+    birthday: datetime = None
 
+class PersonRequest(PersonBase):
+    pass
 
-class PersonCreate(PersonBase):
-    password: str
-
-class Person(PersonBase):
-    id: int
-    security_managers: List[SecurityManager] = []
-    property_owners: List[PropertyOwner] = []
-
+class PersonResponse(PersonBase):
+    id_number: int
     class Config:
         orm_mode = True
 
 
+
+
+## PROPERTY OWNER
+class PropertyOwnerBase(BaseModel):
+    contract_date: date 
+    notification_type :Notification_type 
+
+  
+class PropertyOwnerRequest(PropertyOwnerBase):
+    pass  
+
+class PropertyOwnerResponse(PropertyOwnerBase):
+    property_owner_id: int
+    class Config:
+        use_enum_values = True
+        orm_mode = True
+
+
+
+## SECURITY MANAGER
+
+class SecurityManagerBase(BaseModel):
+    pass
+
+class SecurityManagerRequest(SecurityManagerBase):
+    pass
+
+class SecurityManagerResponse(SecurityManagerBase):
+    id_number: int
+    class Config:
+        orm_mode = True
+   
+
+## BUILDINGS
+
+class BuildingBase(BaseModel): 
+    address:str
+    name: str
+    client : int 
+    #devices: List[Device]
+    #nao sei como meter aqui a pessoa
+
+class BuildingRequest(BuildingBase):
+    pass
+
+class BuildingResponse(BuildingBase):
+    building_id: int
+    class Config:
+        orm_mode = True 

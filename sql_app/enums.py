@@ -2,16 +2,12 @@ from enum import Enum, unique
 
 
 @unique
-class NotificationType(str, Enum):
-    CALL = "VOICE_CALL"
-    TXT_MSG = "TXT_MSG"
+class Notification_type(str, Enum):
+    CALL = 'CALL'
+    TXT_MSG = 'TXT_MSG'
 
-@unique
-class DeviceType(str, Enum):
-    CAMERA = "CAMERA"
-    SENSOR = "SENSOR"
 
 @unique
 class DeviceState(str, Enum):
-    ON = "ON"
-    OFF = "OFF"
+    ON = 'ON'
+    OFF = 'OFF'

@@ -1,45 +1,59 @@
-from fastapi import FastAPI
-
-from typing import List
-
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
 
-from . import crud, models, schemas
-from .database import SessionLocal, engine
+from .models import SecurityManager, Person, PropertyOwner
+from .database import engine, Base, get_db
+from .crud import PropertyOwnerRepository, SecurityManagerRepository
+from . import schemas
+from typing import List
 
-models.Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
 
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+
+@app.post("/owners", response_model=schemas.PropertyOwnerResponse, status_code=status.HTTP_201_CREATED)
+def create_owners(request: schemas.PropertyOwnerRequest, db: Session = Depends(get_db)):
+    owner = PropertyOwnerRepository.save(db,PropertyOwner(**request.dict()) )
+    return schemas.PropertyOwnerResponse.from_orm(owner)
+
+@app.get("/owners", response_model=List[schemas.PropertyOwnerResponse])
+def find_all(db: Session = Depends(get_db)):
+    owners = PropertyOwnerRepository.find_all(db)
+    return [schemas.PropertyOwnerResponse.from_orm(owner) for owner in owners]
+
+@app.get("/owners/{id}", response_model=schemas.PropertyOwnerResponse)
+def find_by_id(id: int, db: Session = Depends(get_db)):
+    owner = PropertyOwnerRepository.find_by_id(db, id)
+    if not owner:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Owner not found"
+        )
+    return schemas.PropertyOwnerResponse.from_orm(owner)
+
+@app.delete("/owners/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_by_id(id: int, db: Session = Depends(get_db)):
+    if not PropertyOwnerRepository.exists_by_id(db, id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Owner not found"
+        )
+    PropertyOwnerRepository.delete_by_id(db, id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+@app.put("/owners/{id}", response_model=schemas.PropertyOwnerResponse)
+def update(id: int, request: schemas.PropertyOwnerRequest, db: Session = Depends(get_db)):
+    if not PropertyOwnerRepository.exists_by_id(db, id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Curso não encontrado"
+        )
+    owner = PropertyOwnerRepository.save(db, PropertyOwner(id=id, **request.dict()))
+    return schemas.PropertyOwnerResponse.from_orm(owner)  
 
 
-@app.post("/person/", response_model=schemas.Person)
-def create_person(person: schemas.PersonCreate, db: Session = Depends(get_db)):
-    db_person = crud.get_person_by_email(db, email=person.email)
-    if db_person:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    return crud.create_person(db=db, person=person)
-
-
-@app.get("/people/", response_model=List[schemas.Person])
-def read_persons(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    persons = crud.get_people(db, skip=skip, limit=limit)
-    return persons
-
-
-@app.get("/person/{person_id}", response_model=schemas.Person)
-def read_person(person_id: int, db: Session = Depends(get_db)):
-    db_person = crud.get_person(db, person_id=person_id)
-    if db_person is None:
-        raise HTTPException(status_code=404, detail="person not found")
-    return db_person
-
+    
+''' 
+@app.get("/managers", response_model=List[schemas.SecurityManagerSchema])
+def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    users = crud.get_security_managers(db, skip=skip, limit=limit)
+    return users '''
