@@ -25,7 +25,7 @@ class PersonBase(BaseModel):
     name: str
     address: str
     cellphone : int
-    birthday: datetime = None
+    birthday: date 
 
 class PersonRequest(PersonBase):
     pass
@@ -39,7 +39,7 @@ class PersonResponse(PersonBase):
 
 
 ## PROPERTY OWNER
-class PropertyOwnerBase(BaseModel):
+class PropertyOwnerBase(PersonBase):
     contract_date: date 
     notification_type :Notification_type 
 
