@@ -28,6 +28,7 @@ class SecurityManagerRepository:
 
     @staticmethod
     def delete_by_id(db: Session, id: int):
+        print("im here AAAAAAAAAAAAAAA")
         manager = db.query(SecurityManager).filter(SecurityManager.id == id).first()
         if manager is not None:
             db.delete(manager)
@@ -60,9 +61,13 @@ class PropertyOwnerRepository:
 
     @staticmethod
     def delete_by_id(db: Session, id: int):
+        print("im here AAAAAAAAAAAAAAA")
+
         owner = db.query(PropertyOwner).filter(PropertyOwner.id == id).first()
+        print("I have a owner", owner)
         if owner is not None:
             db.delete(owner)
+            print("I passed", owner)
             db.commit()
 
 

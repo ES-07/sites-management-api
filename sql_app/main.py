@@ -48,9 +48,8 @@ def update(id: int, request: schemas.PropertyOwnerRequest, db: Session = Depends
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Owner not found"
         )
-    owner = PropertyOwnerRepository.save(db, PropertyOwner(id=id, **request.dict()))
+    owner = PropertyOwnerRepository.save(db,PropertyOwner(**request.dict()) )
     return schemas.PropertyOwnerResponse.from_orm(owner)  
-
 
 ############# SECURITY MANAGER #############
 
@@ -88,7 +87,7 @@ def update(id: int, request: schemas.SecurityManagerRequest, db: Session = Depen
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Security Manager not found"
         )
-    manager = SecurityManagerRepository.save(db, SecurityManager(id=id, **request.dict()))
+    manager = SecurityManagerRepository.save(db, SecurityManager(**request.dict()))
     return schemas.SecurityManagerResponse.from_orm(manager)  
 
 
@@ -128,7 +127,7 @@ def update(id: int, request: schemas.BuildingRequest, db: Session = Depends(get_
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Building not found"
         )
-    building = BuildingRepository.save(db, Building(id=id, **request.dict()))
+    building = BuildingRepository.save(db, Building(**request.dict()))
     return schemas.BuildingResponse.from_orm(building)  
 
 
@@ -168,7 +167,7 @@ def update(id: int, request: schemas.CameraRequest, db: Session = Depends(get_db
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Camera not found"
         )
-    camera = CameraRepository.save(db, Camera(id=id, **request.dict()))
+    camera = CameraRepository.save(db, Camera(**request.dict()))
     return schemas.CameraResponse.from_orm(camera)  
 
 
@@ -208,7 +207,7 @@ def update(id: int, request: schemas.SensorRequest, db: Session = Depends(get_db
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Sensor not found"
         )
-    sensor = SensorRepository.save(db, Sensor(id=id, **request.dict()))
+    sensor = SensorRepository.save(db, Sensor(**request.dict()))
     return schemas.SensorResponse.from_orm(sensor)  
     
 ''' 

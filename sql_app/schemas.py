@@ -81,7 +81,7 @@ class BuildingBase(BaseModel):
     address:str
     building_id:int
     name: str
-    client : int
+    owner_id : int
     cameras: List[CameraResponse] = []
     sensors: List[SensorResponse] = []
 
