@@ -9,7 +9,7 @@ from db.database import Base
 class Person(Base):
     __tablename__ = "person"
 
-    id =  Column(UUID(as_uuid=True), primary_key=True)
+    id =  Column(Integer,Identity(start=1, cycle=True), unique=True, primary_key=True)
     name = Column(String)
     email = Column(String, unique=True)
     hashed_password = Column(String)
@@ -72,6 +72,6 @@ class Intrusion(Base):
 
     intrusion_id = Column(Integer, primary_key=True)
     timestamp = Column(Date)
-    notes = Column(str)
+    notes = Column(String)
     building_id = Column(Integer, ForeignKey("building.building_id", onupdate="CASCADE", ondelete="CASCADE"))
     building = relationship("Building", back_populates="intrusions")

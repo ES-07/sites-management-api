@@ -9,7 +9,6 @@ from uuid import UUID
 from pydantic import BaseModel
 from sqlalchemy import Date
 
-from models.models import Building, Camera, PropertyOwner, Sensor
 from models.enums import DeviceState, Notification_type
 
 
@@ -24,7 +23,7 @@ class HealthResponse(BaseModel):
 class PersonBase(BaseModel):
     email: str
     hashed_password: str
-    id: UUID
+    id: int
     name: str
     address: str
     cellphone : int
@@ -121,12 +120,12 @@ class IntrusionBase(BaseModel):
     notes: str
     timestamp: datetime
     building_id: int
+    intrusion_id:int
 
 class IntrusionRequest(IntrusionBase):
     pass
 
 class IntrusionResponse(IntrusionBase):
-    intrusion_id:int
 
     class Config:
         orm_mode = True

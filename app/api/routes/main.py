@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from core import config
 from models.schemas import HealthResponse
-from models.models import SecurityManager, Person, PropertyOwner, Building, Camera, Sensor
+from models.models import SecurityManager, PropertyOwner, Building, Camera, Sensor, Intrusion
 from db.database import engine, Base, get_db
 from db.crud import  PropertyOwnerRepository, SecurityManagerRepository, BuildingRepository, CameraRepository , SensorRepository, IntrusionRepository
 from models import schemas
@@ -239,32 +239,32 @@ def update(id: int, request: schemas.SensorRequest, db: Session = Depends(get_db
 
 ############# INTRUSION #############
 
-@app.post("/intrusions", response_model=schemas.CameraResponse, status_code=status.HTTP_201_CREATED)
-def create_intrusions(request: schemas.CameraRequest, db: Session = Depends(get_db)):
-    intrusion = CameraRepository.save(db,Camera(**request.dict()) )
-    return schemas.CameraResponse.from_orm(intrusion)
+@app.post("/intrusions", response_model=schemas.IntrusionResponse, status_code=status.HTTP_201_CREATED)
+def create_intrusions(request: schemas.IntrusionRequest, db: Session = Depends(get_db)):
+    intrusion = IntrusionRepository.save(db,Intrusion(**request.dict()) )
+    return schemas.IntrusionResponse.from_orm(intrusion)
 
-@app.get("/intrusions", response_model=List[schemas.CameraResponse])
+@app.get("/intrusions", response_model=List[schemas.IntrusionResponse])
 def find_all(db: Session = Depends(get_db)):
-    intrusions = CameraRepository.find_all(db)
-    return [schemas.CameraResponse.from_orm(intrusion) for intrusion in intrusions]
+    intrusions = IntrusionRepository.find_all(db)
+    return [schemas.IntrusionResponse.from_orm(intrusion) for intrusion in intrusions]
 
-@app.get("/intrusions/{id}", response_model=schemas.CameraResponse)
+@app.get("/intrusions/{id}", response_model=schemas.IntrusionResponse)
 def find_by_id(id: int, db: Session = Depends(get_db)):
-    intrusion = CameraRepository.find_by_id(db, id)
+    intrusion = IntrusionRepository.find_by_id(db, id)
     if not intrusion:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Camera not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Intrusion not found"
         )
-    return schemas.CameraResponse.from_orm(intrusion)
+    return schemas.IntrusionResponse.from_orm(intrusion)
 
 @app.delete("/intrusions/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_by_id(id: int, db: Session = Depends(get_db)):
-    if not CameraRepository.exists_by_id(db, id):
+    if not IntrusionRepository.exists_by_id(db, id):
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Camera not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Intrusion not found"
         )
-    CameraRepository.delete_by_id(db, id)
+    IntrusionRepository.delete_by_id(db, id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 @app.put("/intrusions/{id}", response_model=schemas.IntrusionResponse)
