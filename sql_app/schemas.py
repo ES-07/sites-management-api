@@ -11,9 +11,6 @@ from sql_app.models import Building, Camera, PropertyOwner, Sensor
 from .enums import DeviceState, Notification_type
 
 
-'''
- TO DO, IMPLEMENTAR CAMERAS E SENSORES
- '''
 
 
 ## PERSON
@@ -80,11 +77,24 @@ class SensorResponse(SensorBase):
         orm_mode = True
         use_enum_values = True
 
+class BuildingBase(BaseModel): 
+    address:str
+    building_id:int
+    name: str
+    client : int
+    cameras: List[CameraResponse] = []
+    sensors: List[SensorResponse] = []
+
+
+class BuildingResponse(BuildingBase):
+    class Config:
+        orm_mode = True 
+
 ## PROPERTY OWNER
 class PropertyOwnerBase(PersonBase):
     contract_date: date 
     notification_type :Notification_type 
-    building: str #help, sei que está mal
+    buildings: List[BuildingResponse]=[]  #help, sei que está mal
   
 class PropertyOwnerRequest(PropertyOwnerBase):
     pass  
@@ -96,21 +106,11 @@ class PropertyOwnerResponse(PropertyOwnerBase):
         
 ## BUILDINGS
 
-class BuildingBase(BaseModel): 
-    address:str
-    building_id:int
-    name: str
-    client : PropertyOwnerBase
-    cameras: List[CameraBase]
-    sensors: List[SensorBase]
 
 class BuildingRequest(BuildingBase):
     pass
 
 
-class BuildingResponse(BuildingBase):
-    class Config:
-        orm_mode = True 
 
 
 

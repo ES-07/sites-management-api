@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date, Enum
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date, Enum, Identity
 from sqlalchemy.orm import relationship
 
 from sql_app.enums import DeviceState, Notification_type
@@ -8,7 +8,7 @@ from .database import Base
 class Person(Base):
     __tablename__ = "person"
 
-    id = Column(Integer,unique=True, primary_key=True)
+    id = Column(Integer,Identity(start=1, cycle=True), unique=True, primary_key=True)
     name = Column(String)
     email = Column(String, unique=True)
     hashed_password = Column(String)
