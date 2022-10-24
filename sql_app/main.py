@@ -1,9 +1,10 @@
+from telnetlib import SE
 from fastapi import FastAPI, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
 
 from .models import SecurityManager, Person, PropertyOwner, Building, Camera, Sensor
 from .database import engine, Base, get_db
-from .crud import PropertyOwnerRepository, SecurityManagerRepository, BuildingRepository, CameraRepository , SensorRepository
+from .crud import  PropertyOwnerRepository, SecurityManagerRepository, BuildingRepository, CameraRepository , SensorRepository
 from . import schemas
 from typing import List
 
@@ -16,8 +17,11 @@ app = FastAPI()
 
 @app.post("/owners", response_model=schemas.PropertyOwnerResponse, status_code=status.HTTP_201_CREATED)
 def create_owners(request: schemas.PropertyOwnerRequest, db: Session = Depends(get_db)):
-    owner = PropertyOwnerRepository.save(db,PropertyOwner(**request.dict()) )
-    return schemas.PropertyOwnerResponse.from_orm(owner)
+    #solucao trolha, do over again 
+    if request.id == 0:
+        request.id= 1 + len(PropertyOwnerRepository.find_all(db) + SecurityManagerRepository.find_all(db))
+        owner = PropertyOwnerRepository.save(db,PropertyOwner(**request.dict()) )
+        return schemas.PropertyOwnerResponse.from_orm(owner)
 
 @app.get("/owners", response_model=List[schemas.PropertyOwnerResponse])
 def find_all(db: Session = Depends(get_db)):
