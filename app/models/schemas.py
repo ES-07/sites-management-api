@@ -23,7 +23,6 @@ class HealthResponse(BaseModel):
 class PersonBase(BaseModel):
     email: str
     hashed_password: str
-    id: int
     name: str
     address: str
     cellphone : int
@@ -47,6 +46,7 @@ class SecurityManagerRequest(SecurityManagerBase):
     pass
 
 class SecurityManagerResponse(SecurityManagerBase):
+    id:int
     class Config:
         orm_mode = True
 
@@ -61,7 +61,6 @@ class CameraRequest(CameraBase):
 
 class CameraResponse(CameraBase):
     camera_id:int  
-
     class Config:
         orm_mode = True
 
@@ -84,7 +83,6 @@ class SensorResponse(SensorBase):
 
 class BuildingBase(BaseModel): 
     address:str
-    building_id:int
     name: str
     owner_id : int
     cameras: List[CameraResponse] = []
@@ -92,6 +90,7 @@ class BuildingBase(BaseModel):
 
 
 class BuildingResponse(BuildingBase):
+    id:int
     class Config:
         orm_mode = True 
 
@@ -99,12 +98,13 @@ class BuildingResponse(BuildingBase):
 class PropertyOwnerBase(PersonBase):
     contract_date: date 
     notification_type :Notification_type 
-    buildings: List[BuildingResponse]=[]  #help, sei que está mal
+    buildings: List[BuildingResponse]=[]  #help, maybe está mal
   
 class PropertyOwnerRequest(PropertyOwnerBase):
     pass  
 
 class PropertyOwnerResponse(PropertyOwnerBase):
+    id:int
     class Config:
         use_enum_values = True
         orm_mode = True
@@ -120,13 +120,13 @@ class IntrusionBase(BaseModel):
     notes: str
     timestamp: date  
     building_id: int
-    id:int
+    
 
 class IntrusionRequest(IntrusionBase):
     pass
 
 class IntrusionResponse(IntrusionBase):
-
+    id:int
     class Config:
         orm_mode = True
 

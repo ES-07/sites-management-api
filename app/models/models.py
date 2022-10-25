@@ -38,7 +38,7 @@ class PropertyOwner(Person):
 class Building(Base):
     __tablename__ = "building"
 
-    building_id = Column(Integer, primary_key=True)
+    building_id = Column(Integer, primary_key=True, nullable=False)
     address = Column(String)
     name = Column(String)
     owner_id = Column(Integer, ForeignKey("propertyowner.property_owner_id",  onupdate="CASCADE", ondelete="CASCADE"))
@@ -50,7 +50,7 @@ class Building(Base):
 class Camera(Base):
     __tablename__ = "camera"
 
-    camera_id = Column(Integer, primary_key=True)
+    camera_id = Column(Integer, primary_key=True, nullable=False)
     specifications = Column(String)
     state = Column(Enum(DeviceState, default=DeviceState.OFF))
     building_id = Column(Integer, ForeignKey("building.building_id"))
@@ -60,7 +60,7 @@ class Camera(Base):
 class Sensor(Base):
     __tablename__ = "sensor"
 
-    sensor_id = Column(Integer, primary_key=True)
+    sensor_id = Column(Integer, primary_key=True, nullable=False)
     specifications = Column(String)
     state = Column(Enum(DeviceState, default=DeviceState.OFF))
     building_id = Column(Integer, ForeignKey("building.building_id", onupdate="CASCADE", ondelete="CASCADE"))
@@ -70,7 +70,7 @@ class Sensor(Base):
 class Intrusion(Base):
     __tablename__ = "intrusion"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, nullable=False)
     timestamp = Column(Date)
     notes = Column(String)
     building_id = Column(Integer, ForeignKey("building.building_id", onupdate="CASCADE", ondelete="CASCADE"))
