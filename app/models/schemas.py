@@ -2,29 +2,27 @@ from datetime import datetime, date
 import enum
 from typing import List
 from enum import Enum
+from uuid import UUID
 from fastapi import Security
+from uuid import UUID
 
 from pydantic import BaseModel
 from sqlalchemy import Date
 
-from models.models import PropertyOwner
 from models.enums import DeviceState, Notification_type
 
 
-'''
- TO DO, IMPLEMENTAR CAMERAS E SENSORES
- '''
-
-
-## PERSON
 
 # Class for healthcheck of the API
 class HealthResponse(BaseModel):
     status: str
 
+
+## PERSON
+
 class PersonBase(BaseModel):
     email: str
-    password: str
+    hashed_password: str
     id: int
     name: str
     address: str
@@ -35,57 +33,103 @@ class PersonRequest(PersonBase):
     pass
 
 class PersonResponse(PersonBase):
-    id_number: int
+    id: int
     class Config:
         orm_mode = True
-
-
-
-
-## PROPERTY OWNER
-class PropertyOwnerBase(PersonBase):
-    contract_date: date 
-    notification_type :Notification_type 
-
-  
-class PropertyOwnerRequest(PropertyOwnerBase):
-    pass  
-
-class PropertyOwnerResponse(PropertyOwnerBase):
-    property_owner_id: int
-    class Config:
-        use_enum_values = True
-        orm_mode = True
-
 
 
 ## SECURITY MANAGER
 
-class SecurityManagerBase(BaseModel):
+class SecurityManagerBase(PersonBase):
     pass
 
 class SecurityManagerRequest(SecurityManagerBase):
     pass
 
 class SecurityManagerResponse(SecurityManagerBase):
-    id_number: int
     class Config:
         orm_mode = True
-   
 
-## BUILDINGS
+
+class CameraBase(BaseModel): 
+    specifications: str
+    state: DeviceState
+    building_id: int
+
+class CameraRequest(CameraBase):
+    pass
+
+class CameraResponse(CameraBase):
+    camera_id:int  
+
+    class Config:
+        orm_mode = True
+
+
+
+class SensorBase(BaseModel):
+    specifications: str
+    state: DeviceState
+    building_id: int
+
+class SensorRequest(SensorBase):
+    pass
+
+class SensorResponse(SensorBase):
+    sensor_id:int
+
+    class Config:
+        orm_mode = True
+        use_enum_values = True
 
 class BuildingBase(BaseModel): 
     address:str
+    building_id:int
     name: str
-    client : int 
-    #devices: List[Device]
-    #nao sei como meter aqui a pessoa
+    owner_id : int
+    cameras: List[CameraResponse] = []
+    sensors: List[SensorResponse] = []
+
+
+class BuildingResponse(BuildingBase):
+    class Config:
+        orm_mode = True 
+
+## PROPERTY OWNER
+class PropertyOwnerBase(PersonBase):
+    contract_date: date 
+    notification_type :Notification_type 
+    buildings: List[BuildingResponse]=[]  #help, sei que está mal
+  
+class PropertyOwnerRequest(PropertyOwnerBase):
+    pass  
+
+class PropertyOwnerResponse(PropertyOwnerBase):
+    class Config:
+        use_enum_values = True
+        orm_mode = True
+        
+## BUILDINGS
+
 
 class BuildingRequest(BuildingBase):
     pass
 
-class BuildingResponse(BuildingBase):
+
+class IntrusionBase(BaseModel):
+    notes: str
+    timestamp: date  
     building_id: int
+    id:int
+
+class IntrusionRequest(IntrusionBase):
+    pass
+
+class IntrusionResponse(IntrusionBase):
+
     class Config:
-        orm_mode = True 
+        orm_mode = True
+
+
+
+
