@@ -11,6 +11,7 @@ class SecurityManagerRepository:
 
     @staticmethod
     def save(db: Session, manager: SecurityManager):
+        print("Im saving")
         if manager.id:
             db.merge(manager)
         else:
@@ -184,15 +185,15 @@ class IntrusionRepository:
 
     @staticmethod
     def find_by_id(db: Session, id: int):
-        return db.query(Intrusion).filter(Intrusion.intrusion_id == id).first()
+        return db.query(Intrusion).filter(Intrusion.id == id).first()
 
     @staticmethod
     def exists_by_id(db: Session, id: int):
-        return db.query(Intrusion).filter(Intrusion.intrusion_id == id).first() is not None
+        return db.query(Intrusion).filter(Intrusion.id == id).first() is not None
 
     @staticmethod
     def delete_by_id(db: Session, id: int):
-        intrusion = db.query(Intrusion).filter(Intrusion.intrusion_id == id).first()
+        intrusion = db.query(Intrusion).filter(Intrusion.id == id).first()
         if intrusion is not None:
             db.delete(intrusion)
             db.commit()

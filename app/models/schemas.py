@@ -118,9 +118,9 @@ class BuildingRequest(BuildingBase):
 
 class IntrusionBase(BaseModel):
     notes: str
-    timestamp: datetime
+    timestamp: date  
     building_id: int
-    intrusion_id:int
+    id:int
 
 class IntrusionRequest(IntrusionBase):
     pass

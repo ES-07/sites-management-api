@@ -70,7 +70,7 @@ class Sensor(Base):
 class Intrusion(Base):
     __tablename__ = "intrusion"
 
-    intrusion_id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
     timestamp = Column(Date)
     notes = Column(String)
     building_id = Column(Integer, ForeignKey("building.building_id", onupdate="CASCADE", ondelete="CASCADE"))
