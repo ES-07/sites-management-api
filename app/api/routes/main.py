@@ -5,9 +5,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from core import config
 from models.schemas import HealthResponse
-from models.models import SecurityManager, PropertyOwner, Building, Camera, Sensor, Intrusion
+from models.models import SecurityManager, PropertyOwner, Building, Device, Intrusion
 from db.database import engine, Base, get_db
-from db.crud import  PropertyOwnerRepository, SecurityManagerRepository, BuildingRepository, CameraRepository , SensorRepository, IntrusionRepository
+from db.crud import  PropertyOwnerRepository, SecurityManagerRepository, BuildingRepository, DeviceRepository , IntrusionRepository
 from models import schemas
 from typing import List
 
@@ -155,84 +155,45 @@ def update(id: int, request: schemas.BuildingRequest, db: Session = Depends(get_
     return schemas.BuildingResponse.from_orm(building)  
 
 
-############# CAMERAS #############
 
-@app.post("/cameras", response_model=schemas.CameraResponse, status_code=status.HTTP_201_CREATED)
-def create_cameras(request: schemas.CameraRequest, db: Session = Depends(get_db)):
-    camera = CameraRepository.save(db,Camera(**request.dict()) )
-    return schemas.CameraResponse.from_orm(camera)
+############# DEVICE #############
 
-@app.get("/cameras", response_model=List[schemas.CameraResponse])
+@app.post("/devices", response_model=schemas.DeviceResponse, status_code=status.HTTP_201_CREATED)
+def create_devices(request: schemas.DeviceRequest, db: Session = Depends(get_db)):
+    device = DeviceRepository.save(db,Device(**request.dict()) )
+    return schemas.DeviceResponse.from_orm(device)
+
+@app.get("/devices", response_model=List[schemas.DeviceResponse])
 def find_all(db: Session = Depends(get_db)):
-    cameras = CameraRepository.find_all(db)
-    return [schemas.CameraResponse.from_orm(camera) for camera in cameras]
+    devices = DeviceRepository.find_all(db)
+    return [schemas.DeviceResponse.from_orm(device) for device in devices]
 
-@app.get("/cameras/{id}", response_model=schemas.CameraResponse)
+@app.get("/devices/{id}", response_model=schemas.DeviceResponse)
 def find_by_id(id: int, db: Session = Depends(get_db)):
-    camera = CameraRepository.find_by_id(db, id)
-    if not camera:
+    device = DeviceRepository.find_by_id(db, id)
+    if not device:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Camera not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Device not found"
         )
-    return schemas.CameraResponse.from_orm(camera)
+    return schemas.DeviceResponse.from_orm(device)
 
-@app.delete("/cameras/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@app.delete("/devices/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_by_id(id: int, db: Session = Depends(get_db)):
-    if not CameraRepository.exists_by_id(db, id):
+    if not DeviceRepository.exists_by_id(db, id):
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Camera not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Device not found"
         )
-    CameraRepository.delete_by_id(db, id)
+    DeviceRepository.delete_by_id(db, id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-@app.put("/cameras/{id}", response_model=schemas.CameraResponse)
-def update(id: int, request: schemas.CameraRequest, db: Session = Depends(get_db)):
-    if not CameraRepository.exists_by_id(db, id):
+@app.put("/devices/{id}", response_model=schemas.DeviceResponse)
+def update(id: int, request: schemas.DeviceRequest, db: Session = Depends(get_db)):
+    if not DeviceRepository.exists_by_id(db, id):
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Camera not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Device not found"
         )
-    camera = CameraRepository.save(db, Camera(**request.dict()))
-    return schemas.CameraResponse.from_orm(camera)  
-
-
-############# SENSOR #############
-
-@app.post("/sensors", response_model=schemas.SensorResponse, status_code=status.HTTP_201_CREATED)
-def create_sensors(request: schemas.SensorRequest, db: Session = Depends(get_db)):
-    sensor = SensorRepository.save(db,Sensor(**request.dict()) )
-    return schemas.SensorResponse.from_orm(sensor)
-
-@app.get("/sensors", response_model=List[schemas.SensorResponse])
-def find_all(db: Session = Depends(get_db)):
-    sensors = SensorRepository.find_all(db)
-    return [schemas.SensorResponse.from_orm(sensor) for sensor in sensors]
-
-@app.get("/sensors/{id}", response_model=schemas.SensorResponse)
-def find_by_id(id: int, db: Session = Depends(get_db)):
-    sensor = SensorRepository.find_by_id(db, id)
-    if not sensor:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Sensor not found"
-        )
-    return schemas.SensorResponse.from_orm(sensor)
-
-@app.delete("/sensors/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_by_id(id: int, db: Session = Depends(get_db)):
-    if not SensorRepository.exists_by_id(db, id):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Sensor not found"
-        )
-    SensorRepository.delete_by_id(db, id)
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
-
-@app.put("/sensors/{id}", response_model=schemas.SensorResponse)
-def update(id: int, request: schemas.SensorRequest, db: Session = Depends(get_db)):
-    if not SensorRepository.exists_by_id(db, id):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Sensor not found"
-        )
-    sensor = SensorRepository.save(db, Sensor(**request.dict()))
-    return schemas.SensorResponse.from_orm(sensor)  
+    device = DeviceRepository.save(db, Device(**request.dict()))
+    return schemas.DeviceResponse.from_orm(device)  
     
 
 ############# INTRUSION #############

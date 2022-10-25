@@ -2,7 +2,7 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date, Enum,
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 
-from models.enums import DeviceState, Notification_type
+from models.enums import DeviceState, DeviceType, Notification_type
 from db.database import Base
 
 
@@ -38,40 +38,30 @@ class PropertyOwner(Person):
 class Building(Base):
     __tablename__ = "building"
 
-    building_id = Column(Integer, primary_key=True, nullable=False)
+    id = Column(Integer, primary_key=True, nullable=False)
     address = Column(String)
     name = Column(String)
     owner_id = Column(Integer, ForeignKey("propertyowner.property_owner_id",  onupdate="CASCADE", ondelete="CASCADE"))
     owner = relationship("PropertyOwner", back_populates="buildings", cascade="delete, merge, save-update")
-    cameras = relationship("Camera", back_populates="building", cascade="delete, merge, save-update")
-    sensors = relationship("Sensor", back_populates="building", cascade="delete, merge, save-update")
+    devices = relationship("Device", back_populates="building", cascade="delete, merge, save-update")
     intrusions = relationship("Intrusion", back_populates="building", cascade="delete, merge, save-update")
 
-class Camera(Base):
-    __tablename__ = "camera"
 
-    camera_id = Column(Integer, primary_key=True, nullable=False)
+class Device(Base):
+    __tablename__ = "device"
+
+    id = Column(Integer, primary_key=True, nullable=False)
     specifications = Column(String)
     state = Column(Enum(DeviceState, default=DeviceState.OFF))
-    building_id = Column(Integer, ForeignKey("building.building_id"))
-    building = relationship("Building", back_populates="cameras")
-
-
-class Sensor(Base):
-    __tablename__ = "sensor"
-
-    sensor_id = Column(Integer, primary_key=True, nullable=False)
-    specifications = Column(String)
-    state = Column(Enum(DeviceState, default=DeviceState.OFF))
-    building_id = Column(Integer, ForeignKey("building.building_id", onupdate="CASCADE", ondelete="CASCADE"))
-    building = relationship("Building", back_populates="sensors")
-
+    type = Column(Enum(DeviceType))
+    building_id = Column(Integer, ForeignKey("building.id", onupdate="CASCADE", ondelete="CASCADE"))
+    building = relationship("Building", back_populates="devices")
 
 class Intrusion(Base):
     __tablename__ = "intrusion"
 
     id = Column(Integer, primary_key=True, nullable=False)
     timestamp = Column(Date)
-    notes = Column(String)
-    building_id = Column(Integer, ForeignKey("building.building_id", onupdate="CASCADE", ondelete="CASCADE"))
+    building_id = Column(Integer, ForeignKey("building.id", onupdate="CASCADE", ondelete="CASCADE"))
+    device_id = Column(Integer, ForeignKey("device.id", onupdate="CASCADE", ondelete="CASCADE"))
     building = relationship("Building", back_populates="intrusions")

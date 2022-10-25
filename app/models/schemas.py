@@ -9,7 +9,7 @@ from uuid import UUID
 from pydantic import BaseModel
 from sqlalchemy import Date
 
-from models.enums import DeviceState, Notification_type
+from models.enums import DeviceState, DeviceType, Notification_type
 
 
 
@@ -51,43 +51,31 @@ class SecurityManagerResponse(SecurityManagerBase):
         orm_mode = True
 
 
-class CameraBase(BaseModel): 
+## DEVICE
+class DeviceBase(BaseModel): 
     specifications: str
     state: DeviceState
+    type: DeviceType
     building_id: int
 
-class CameraRequest(CameraBase):
+class DeviceRequest(DeviceBase):
     pass
 
-class CameraResponse(CameraBase):
-    camera_id:int  
+class DeviceResponse(DeviceBase):
+    id:int  
     class Config:
         orm_mode = True
 
-
-
-class SensorBase(BaseModel):
-    specifications: str
-    state: DeviceState
-    building_id: int
-
-class SensorRequest(SensorBase):
-    pass
-
-class SensorResponse(SensorBase):
-    sensor_id:int
-
-    class Config:
-        orm_mode = True
-        use_enum_values = True
+## BUILDING
 
 class BuildingBase(BaseModel): 
     address:str
     name: str
     owner_id : int
-    cameras: List[CameraResponse] = []
-    sensors: List[SensorResponse] = []
+    devices: List[DeviceResponse] = []
 
+class BuildingRequest(BuildingBase):
+    pass
 
 class BuildingResponse(BuildingBase):
     id:int
@@ -108,19 +96,14 @@ class PropertyOwnerResponse(PropertyOwnerBase):
     class Config:
         use_enum_values = True
         orm_mode = True
+
         
-## BUILDINGS
-
-
-class BuildingRequest(BuildingBase):
-    pass
-
+## INTRUSION
 
 class IntrusionBase(BaseModel):
-    notes: str
-    timestamp: date  
+    timestamp: str  
     building_id: int
-    
+    device_id: int
 
 class IntrusionRequest(IntrusionBase):
     pass
