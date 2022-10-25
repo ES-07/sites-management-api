@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from models.models import Building, Camera, SecurityManager, PropertyOwner, Sensor, Intrusion
+from models.models import Building, Device, SecurityManager, PropertyOwner, Intrusion
 
 
 class SecurityManagerRepository:
@@ -11,7 +11,6 @@ class SecurityManagerRepository:
 
     @staticmethod
     def save(db: Session, manager: SecurityManager):
-        print("Im saving")
         if manager.id:
             db.merge(manager)
         else:
@@ -29,7 +28,6 @@ class SecurityManagerRepository:
 
     @staticmethod
     def delete_by_id(db: Session, id: int):
-        print("im here AAAAAAAAAAAAAAA")
         manager = db.query(SecurityManager).filter(SecurityManager.id == id).first()
         if manager is not None:
             db.delete(manager)
@@ -81,7 +79,7 @@ class BuildingRepository:
 
     @staticmethod
     def save(db: Session, building: Building):
-        if building.building_id:
+        if building.id:
             db.merge(building)
         else:
             db.add(building)
@@ -90,82 +88,52 @@ class BuildingRepository:
 
     @staticmethod
     def find_by_id(db: Session, id: int):
-        return db.query(Building).filter(Building.building_id == id).first()
+        return db.query(Building).filter(Building.id == id).first()
 
     @staticmethod
     def exists_by_id(db: Session, id: int):
-        return db.query(Building).filter(Building.building_id == id).first() is not None
+        return db.query(Building).filter(Building.id == id).first() is not None
 
     @staticmethod
     def delete_by_id(db: Session, id: int):
-        building = db.query(Building).filter(Building.building_id == id).first()
+        building = db.query(Building).filter(Building.id == id).first()
         if building is not None:
             db.delete(building)
             db.commit()
 
 
-class CameraRepository:
+class DeviceRepository:
     
     @staticmethod
     def find_all(db: Session):
-        return db.query(Camera).all()
+        return db.query(Device).all()
     
 
     @staticmethod
-    def save(db: Session, camera: Camera):
-        if camera.camera_id:
-            db.merge(camera)
+    def save(db: Session, device: Device):
+        if device.id:
+            db.merge(device)
         else:
-            db.add(camera)
+            db.add(device)
         db.commit()
-        return camera
+        return device
 
     @staticmethod
     def find_by_id(db: Session, id: int):
-        return db.query(Camera).filter(Camera.camera_id == id).first()
+        return db.query(Device).filter(Device.id == id).first()
 
     @staticmethod
     def exists_by_id(db: Session, id: int):
-        return db.query(Camera).filter(Camera.camera_id == id).first() is not None
+        return db.query(Device).filter(Device.id == id).first() is not None
 
     @staticmethod
     def delete_by_id(db: Session, id: int):
-        camera = db.query(Camera).filter(Camera.camera_id == id).first()
-        if camera is not None:
-            db.delete(camera)
+        device = db.query(Device).filter(Device.id == id).first()
+        if device is not None:
+            db.delete(device)
             db.commit()
 
 
-class SensorRepository:
-    
-    @staticmethod
-    def find_all(db: Session):
-        return db.query(Sensor).all()
-    
-
-    @staticmethod
-    def save(db: Session, sensor: Sensor):
-        if sensor.id:
-            db.merge(sensor)
-        else:
-            db.add(sensor)
-        db.commit()
-        return sensor
-
-    @staticmethod
-    def find_by_id(db: Session, id: int):
-        return db.query(Sensor).filter(Sensor.sensor_id == id).first()
-
-    @staticmethod
-    def exists_by_id(db: Session, id: int):
-        return db.query(Sensor).filter(Sensor.sensor_id == id).first() is not None
-
-    @staticmethod
-    def delete_by_id(db: Session, id: int):
-        sensor = db.query(Sensor).filter(Sensor.sensor_id == id).first()
-        if sensor is not None:
-            db.delete(sensor)
-            db.commit()
 
 class IntrusionRepository:
     

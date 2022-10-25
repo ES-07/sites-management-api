@@ -11,3 +11,8 @@ class Notification_type(str, Enum):
 class DeviceState(str, Enum):
     ON = 'ON'
     OFF = 'OFF'
+
+@unique
+class DeviceType(str, Enum):
+    CAMERA = 'CAMERA'
+    SENSOR = 'SENSOR'

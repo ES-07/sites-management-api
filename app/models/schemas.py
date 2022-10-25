@@ -9,7 +9,7 @@ from uuid import UUID
 from pydantic import BaseModel
 from sqlalchemy import Date
 
-from models.enums import DeviceState, Notification_type
+from models.enums import DeviceState, DeviceType, Notification_type
 
 
 
@@ -23,7 +23,6 @@ class HealthResponse(BaseModel):
 class PersonBase(BaseModel):
     email: str
     hashed_password: str
-    id: int
     name: str
     address: str
     cellphone : int
@@ -47,51 +46,39 @@ class SecurityManagerRequest(SecurityManagerBase):
     pass
 
 class SecurityManagerResponse(SecurityManagerBase):
+    id:int
     class Config:
         orm_mode = True
 
 
-class CameraBase(BaseModel): 
+## DEVICE
+class DeviceBase(BaseModel): 
     specifications: str
     state: DeviceState
+    type: DeviceType
     building_id: int
 
-class CameraRequest(CameraBase):
+class DeviceRequest(DeviceBase):
     pass
 
-class CameraResponse(CameraBase):
-    camera_id:int  
-
+class DeviceResponse(DeviceBase):
+    id:int  
     class Config:
         orm_mode = True
 
-
-
-class SensorBase(BaseModel):
-    specifications: str
-    state: DeviceState
-    building_id: int
-
-class SensorRequest(SensorBase):
-    pass
-
-class SensorResponse(SensorBase):
-    sensor_id:int
-
-    class Config:
-        orm_mode = True
-        use_enum_values = True
+## BUILDING
 
 class BuildingBase(BaseModel): 
     address:str
-    building_id:int
     name: str
     owner_id : int
-    cameras: List[CameraResponse] = []
-    sensors: List[SensorResponse] = []
+    devices: List[DeviceResponse] = []
 
+class BuildingRequest(BuildingBase):
+    pass
 
 class BuildingResponse(BuildingBase):
+    id:int
     class Config:
         orm_mode = True 
 
@@ -99,34 +86,30 @@ class BuildingResponse(BuildingBase):
 class PropertyOwnerBase(PersonBase):
     contract_date: date 
     notification_type :Notification_type 
-    buildings: List[BuildingResponse]=[]  #help, sei que está mal
+    buildings: List[BuildingResponse]=[]  #help, maybe está mal
   
 class PropertyOwnerRequest(PropertyOwnerBase):
     pass  
 
 class PropertyOwnerResponse(PropertyOwnerBase):
+    id:int
     class Config:
         use_enum_values = True
         orm_mode = True
+
         
-## BUILDINGS
-
-
-class BuildingRequest(BuildingBase):
-    pass
-
+## INTRUSION
 
 class IntrusionBase(BaseModel):
-    notes: str
-    timestamp: date  
+    timestamp: str  
     building_id: int
-    id:int
+    device_id: int
 
 class IntrusionRequest(IntrusionBase):
     pass
 
 class IntrusionResponse(IntrusionBase):
-
+    id:int
     class Config:
         orm_mode = True
 
