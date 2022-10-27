@@ -14,7 +14,7 @@ class Person(Base):
     email = Column(String, unique=True)
     hashed_password = Column(String)
     address = Column(String)
-    cellphone = Column(Integer)
+    cellphone = Column(String)
     birthday = Column(Date)
     property_owners = relationship("PropertyOwner", back_populates="person", cascade="delete, merge, save-update",passive_deletes=True)
     security_managers = relationship("SecurityManager", back_populates="person", cascade="delete, merge, save-update", passive_deletes=True)
@@ -61,7 +61,7 @@ class Intrusion(Base):
     __tablename__ = "intrusion"
 
     id = Column(Integer, primary_key=True, nullable=False)
-    timestamp = Column(Date)
+    timestamp = Column(String)
     building_id = Column(Integer, ForeignKey("building.id", onupdate="CASCADE", ondelete="CASCADE"))
     device_id = Column(Integer, ForeignKey("device.id", onupdate="CASCADE", ondelete="CASCADE"))
     building = relationship("Building", back_populates="intrusions")

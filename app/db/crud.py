@@ -1,3 +1,6 @@
+import datetime
+from psycopg2 import Timestamp
+from models.enums import Notification_type
 from sqlalchemy.orm import Session
 from models.models import Building, Device, SecurityManager, PropertyOwner, Intrusion
 
@@ -43,6 +46,8 @@ class PropertyOwnerRepository:
 
     @staticmethod
     def save(db: Session, owner: PropertyOwner):
+        owner.notification_type = Notification_type.TXT_MSG
+        owner.contract_date = datetime.date.today().isoformat()
         if owner.id:
             db.merge(owner)
         else:
@@ -53,6 +58,10 @@ class PropertyOwnerRepository:
     @staticmethod
     def find_by_id(db: Session, id: int):
         return db.query(PropertyOwner).filter(PropertyOwner.id == id).first()
+
+    @staticmethod
+    def find_by_email(db: Session, email: str):
+        return db.query(PropertyOwner).filter(PropertyOwner.email == email).first()
 
     @staticmethod
     def exists_by_id(db: Session, id: int):

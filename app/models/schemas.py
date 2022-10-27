@@ -1,13 +1,15 @@
 from datetime import datetime, date
 import enum
-from typing import List
+from typing import List, Optional, Union
 from enum import Enum
 from uuid import UUID
 from fastapi import Security
 from uuid import UUID
+from psycopg2 import Timestamp
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy import Date
+from datetime import datetime, timezone
 
 from models.enums import DeviceState, DeviceType, Notification_type
 
@@ -25,7 +27,7 @@ class PersonBase(BaseModel):
     hashed_password: str
     name: str
     address: str
-    cellphone : int
+    cellphone : str
     birthday: date 
 
 class PersonRequest(PersonBase):
@@ -82,17 +84,21 @@ class BuildingResponse(BuildingBase):
     class Config:
         orm_mode = True 
 
+
 ## PROPERTY OWNER
 class PropertyOwnerBase(PersonBase):
-    contract_date: date 
-    notification_type :Notification_type 
-    buildings: List[BuildingResponse]=[]  #help, maybe está mal
-  
+    
+  pass
 class PropertyOwnerRequest(PropertyOwnerBase):
     pass  
 
 class PropertyOwnerResponse(PropertyOwnerBase):
+
+    buildings: List[BuildingResponse]=[]  #help, maybe está mal
+    contract_date: Optional[date]
     id:int
+    notification_type : Union[Notification_type, None]= Field(default=None, example=Notification_type.TXT_MSG)
+
     class Config:
         use_enum_values = True
         orm_mode = True
@@ -112,7 +118,3 @@ class IntrusionResponse(IntrusionBase):
     id:int
     class Config:
         orm_mode = True
-
-
-
-
