@@ -1,5 +1,5 @@
 from telnetlib import SE
-from fastapi import FastAPI, Depends, HTTPException, status, Response
+from fastapi import FastAPI, Depends, HTTPException, status, Response,  Response, Request
 from sqlalchemy.orm import Session
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,6 +10,7 @@ from db.database import engine, Base, get_db
 from db.crud import  PropertyOwnerRepository, SecurityManagerRepository, BuildingRepository, DeviceRepository , IntrusionRepository
 from models import schemas
 from typing import List
+from pydantic import BaseModel
 
 Base.metadata.create_all(bind=engine)
 
@@ -74,6 +75,27 @@ def update(id: int, request: schemas.PropertyOwnerRequest, db: Session = Depends
         )
     owner = PropertyOwnerRepository.save(db,PropertyOwner(**request.dict()) )
     return schemas.PropertyOwnerResponse.from_orm(owner)  
+
+
+class User(BaseModel):
+    email: str
+    password: str
+
+@app.post("/owners/login")
+async def login_owner(user: User, db: Session = Depends(get_db)):
+    owner: PropertyOwner = PropertyOwnerRepository.find_by_email(db, user.email)
+    if not owner:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Owner not found"
+        )
+
+    # alterar mais tarde, hardcoded máximo
+    if owner.hashed_password == user.password:
+        return status.HTTP_200_OK, owner
+
+    else:
+        return status.HTTP_401_UNAUTHORIZED
+
 
 ############# SECURITY MANAGER #############
 
