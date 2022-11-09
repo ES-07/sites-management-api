@@ -7,4 +7,6 @@ psycopg2==2.8.6
 psycopg2-binary
 databases==0.4.2
 requests==2.25.1
-pytest==5.3.5
+pytest
+passlib 
+

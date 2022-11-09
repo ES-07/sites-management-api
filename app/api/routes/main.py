@@ -3,13 +3,14 @@ from fastapi import FastAPI, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from core import config
-from models.schemas import HealthResponse
-from models.models import SecurityManager, PropertyOwner, Building, Device, Intrusion
-from db.database import engine, Base, get_db
-from db.crud import  PropertyOwnerRepository, SecurityManagerRepository, BuildingRepository, DeviceRepository , IntrusionRepository
-from models import schemas
+from app.core.config import config
+from app.models.schemas import HealthResponse
+from app.models.models import SecurityManager, PropertyOwner, Building, Device, Intrusion
+from app.db.database import engine, Base, get_db
+from app.db.crud import  PropertyOwnerRepository, SecurityManagerRepository, BuildingRepository, DeviceRepository , IntrusionRepository
 from typing import List
+from fastapi.openapi.utils import get_openapi
+
 
 Base.metadata.create_all(bind=engine)
 

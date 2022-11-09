@@ -9,7 +9,7 @@ from uuid import UUID
 from pydantic import BaseModel
 from sqlalchemy import Date
 
-from models.enums import DeviceState, DeviceType, Notification_type
+from app.models.enums import DeviceState, DeviceType, Notification_type
 
 
 

@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from models.models import Building, Device, SecurityManager, PropertyOwner, Intrusion
+from app.models.models import Building, Device, SecurityManager, PropertyOwner, Intrusion
 
 
 class SecurityManagerRepository:

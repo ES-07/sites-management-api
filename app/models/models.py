@@ -2,8 +2,8 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date, Enum,
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 
-from models.enums import DeviceState, DeviceType, Notification_type
-from db.database import Base
+from app.models.enums import DeviceState, DeviceType, Notification_type
+from app.db.database import Base
 
 
 class Person(Base):

@@ -22,11 +22,11 @@ services:
       retries: 3
 
   fastapi:
+    restart: always
     build: ./app
     ports:
       - 8002:8000
     container_name: sites-backend-fastapi
-    restart: always
     depends_on:
       postgres:
         condition: service_healthy
