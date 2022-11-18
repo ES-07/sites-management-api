@@ -58,6 +58,15 @@ def find_by_id(id: int, db: Session = Depends(get_db)):
         )
     return schemas.PropertyOwnerResponse.from_orm(owner)
 
+@app.get("/owners/email/{email}", response_model=schemas.PropertyOwnerResponse)
+def find_by_email(email: str, db: Session = Depends(get_db)):
+    owner = PropertyOwnerRepository.find_by_email(db, email)
+    if not owner:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Owner not found"
+        )
+    return schemas.PropertyOwnerResponse.from_orm(owner)
+
 @app.delete("/owners/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_by_id(id: int, db: Session = Depends(get_db)):
     if not PropertyOwnerRepository.exists_by_id(db, id):
