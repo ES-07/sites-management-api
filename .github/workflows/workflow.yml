@@ -40,9 +40,7 @@ jobs:
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_SERVER: ${{ secrets.POSTGRES_SERVER }}
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-        run: |
-          cd api/routes
-          python3 main.py & pytest # this must be changed
+        run: uvicorn api.routes.main:app & pytest # this must be changed
 
   # continuous-deployment:
   #   runs-on: ubuntu-latest
