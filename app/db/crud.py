@@ -58,6 +58,10 @@ class PropertyOwnerRepository:
     @staticmethod
     def find_by_id(db: Session, id: int):
         return db.query(PropertyOwner).filter(PropertyOwner.id == id).first()
+    
+    @staticmethod
+    def find_by_cognito_id(db: Session, id: str):
+        return db.query(PropertyOwner).filter(PropertyOwner.cognito_id == id).first()
 
     @staticmethod
     def find_by_email(db: Session, email: str):
@@ -69,13 +73,9 @@ class PropertyOwnerRepository:
 
     @staticmethod
     def delete_by_id(db: Session, id: int):
-        print("im here AAAAAAAAAAAAAAA")
-
         owner = db.query(PropertyOwner).filter(PropertyOwner.id == id).first()
-        print("I have a owner", owner)
         if owner is not None:
             db.delete(owner)
-            print("I passed", owner)
             db.commit()
 
 
