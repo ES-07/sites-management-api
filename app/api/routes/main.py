@@ -3,8 +3,8 @@ from fastapi import FastAPI, Depends, HTTPException, status, Response,  Response
 from sqlalchemy.orm import Session
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from models.schemas import HealthResponse
 from core import config
+from models.schemas import HealthResponse
 from models.models import SecurityManager, PropertyOwner, Building, Device, Intrusion
 from db.database import engine, Base, get_db
 from db.crud import  PropertyOwnerRepository, SecurityManagerRepository, BuildingRepository, DeviceRepository , IntrusionRepository
