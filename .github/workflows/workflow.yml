@@ -35,11 +35,11 @@ jobs:
           #aws-region: eu-west-3
       # Step 5
       - name: Build Application and Run unit Test
-        # env:
-        #   POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-        #   POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        #   POSTGRES_SERVER: ${{ secrets.POSTGRES_SERVER }}
-        #   POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_SERVER: ${{ secrets.POSTGRES_SERVER }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
         run: uvicorn api.routes.main:app & pytest # this must be changed
 
   # continuous-deployment:
