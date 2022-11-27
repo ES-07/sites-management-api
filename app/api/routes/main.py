@@ -9,7 +9,7 @@ from models.models import SecurityManager, PropertyOwner, Building, Device, Intr
 from db.database import engine, Base, get_db
 from db.crud import  PropertyOwnerRepository, SecurityManagerRepository, BuildingRepository, DeviceRepository , IntrusionRepository
 from models import schemas
-from typing import List
+from typing import List, Union
 from pydantic import BaseModel
 
 Base.metadata.create_all(bind=engine)
@@ -52,6 +52,15 @@ def find_all(db: Session = Depends(get_db)):
 @app.get("/owners/{id}", response_model=schemas.PropertyOwnerResponse)
 def find_by_id(id: str, db: Session = Depends(get_db)):
     owner = PropertyOwnerRepository.find_by_cognito_id(db, id)
+    if not owner:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Owner not found"
+        )
+    return schemas.PropertyOwnerResponse.from_orm(owner)
+
+@app.get("/owners/email/{email}", response_model=schemas.PropertyOwnerResponse)
+def find_by_email(email: str, db: Session = Depends(get_db)):
+    owner = PropertyOwnerRepository.find_by_email(db, email)
     if not owner:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Owner not found"
@@ -158,6 +167,17 @@ def find_by_id(id: int, db: Session = Depends(get_db)):
         )
     return schemas.BuildingResponse.from_orm(building)
 
+@app.get("/buildings/owner/{id}", response_model=List[schemas.BuildingResponse])
+def find_by_owner_id(id: int, db: Session = Depends(get_db)):
+    print("here")
+    buildings = BuildingRepository.find_by_owner_id(db, id)
+    print("these are the buildings", buildings)
+    if not buildings:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="This owner has no buildings"
+        )
+    return [schemas.BuildingResponse.from_orm(building) for building in buildings]
+
 @app.delete("/buildings/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_by_id(id: int, db: Session = Depends(get_db)):
     if not BuildingRepository.exists_by_id(db, id):
@@ -177,7 +197,6 @@ def update(id: int, request: schemas.BuildingRequest, db: Session = Depends(get_
     return schemas.BuildingResponse.from_orm(building)  
 
 
-
 ############# DEVICE #############
 
 @app.post("/devices", response_model=schemas.DeviceResponse, status_code=status.HTTP_201_CREATED)
@@ -190,6 +209,7 @@ def find_all(db: Session = Depends(get_db)):
     devices = DeviceRepository.find_all(db)
     return [schemas.DeviceResponse.from_orm(device) for device in devices]
 
+
 @app.get("/devices/{id}", response_model=schemas.DeviceResponse)
 def find_by_id(id: int, db: Session = Depends(get_db)):
     device = DeviceRepository.find_by_id(db, id)
@@ -198,6 +218,16 @@ def find_by_id(id: int, db: Session = Depends(get_db)):
             status_code=status.HTTP_404_NOT_FOUND, detail="Device not found"
         )
     return schemas.DeviceResponse.from_orm(device)
+
+@app.get("/devices/building/{id}", response_model=List[schemas.DeviceResponse])
+def find_by_building_id(id: int, db: Session = Depends(get_db)):
+    devices = DeviceRepository.find_by_building_id(db, id)
+    if not devices:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="This building has no devices"
+        )
+    return [schemas.DeviceResponse.from_orm(device) for device in devices]
+
 
 @app.delete("/devices/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_by_id(id: int, db: Session = Depends(get_db)):
@@ -238,6 +268,34 @@ def find_by_id(id: int, db: Session = Depends(get_db)):
             status_code=status.HTTP_404_NOT_FOUND, detail="Intrusion not found"
         )
     return schemas.IntrusionResponse.from_orm(intrusion)
+
+@app.get("/intrusions/device/{id}", response_model=List[schemas.IntrusionResponse])
+def find_by_device_id(id: int, db: Session = Depends(get_db)):
+    intrusions = IntrusionRepository.find_by_device_id(db, id)
+    if not intrusions:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="This device has no intrusions"
+        )
+    return [schemas.IntrusionResponse.from_orm(intrusion) for intrusion in intrusions]
+
+@app.get("/intrusions/building/{id}", response_model=List[schemas.IntrusionResponse])
+def find_by_building_id(id: int, db: Session = Depends(get_db)):
+    intrusions = IntrusionRepository.find_by_building_id(db, id)
+    if not intrusions:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="This building has no intrusions"
+        )
+    return [schemas.IntrusionResponse.from_orm(intrusion) for intrusion in intrusions]
+
+@app.get("/intrusions/owner/{id}", response_model=List[schemas.IntrusionResponse])
+def find_by_owner_id(id: int, db: Session = Depends(get_db)):
+    intrusions = IntrusionRepository.find_by_owner_id(db, id)
+    if not intrusions:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="This owner has no intrusions"
+        )
+    return [schemas.IntrusionResponse.from_orm(intrusion) for intrusion in intrusions]
+
 
 @app.delete("/intrusions/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_by_id(id: int, db: Session = Depends(get_db)):
