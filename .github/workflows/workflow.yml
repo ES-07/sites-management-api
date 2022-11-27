@@ -35,7 +35,7 @@ jobs:
           #aws-region: eu-west-3
       # Step 5
       - name: Build Application and Run unit Test
-        env:
+        environment:
           - POSTGRES_USER=postgres
           - POSTGRES_PASSWORD=postgres
           - POSTGRES_SERVER=15.237.96.214
