@@ -42,7 +42,7 @@ jobs:
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_SERVER: ${{ secrets.POSTGRES_SERVER }}
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-        run: python3 app.py & pytest
+        # run: python3 app.py & pytest # this must be changed
 
   # continuous-deployment:
   #   runs-on: ubuntu-latest
