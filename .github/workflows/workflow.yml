@@ -12,6 +12,9 @@ on:
 jobs:
   continuous-integration:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./app
     steps:
       # Step 1
       - uses: actions/checkout@v2
