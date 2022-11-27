@@ -50,8 +50,8 @@ def find_all(db: Session = Depends(get_db)):
     return [schemas.PropertyOwnerResponse.from_orm(owner) for owner in owners]
 
 @app.get("/owners/{id}", response_model=schemas.PropertyOwnerResponse)
-def find_by_id(id: int, db: Session = Depends(get_db)):
-    owner = PropertyOwnerRepository.find_by_id(db, id)
+def find_by_id(id: str, db: Session = Depends(get_db)):
+    owner = PropertyOwnerRepository.find_by_cognito_id(db, id)
     if not owner:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Owner not found"
