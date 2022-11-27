@@ -24,8 +24,6 @@ jobs:
         with:
           python-version: 3.8
       # Step 3
-      - name: LS
-        run: ls -l
       - name: Install dependencies
         run: pip install -r requirements.txt
       # Step 4
