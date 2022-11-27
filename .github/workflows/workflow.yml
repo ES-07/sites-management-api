@@ -36,10 +36,10 @@ jobs:
       # Step 5
       - name: Build Application and Run unit Test
         env:
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_SERVER: ${{ secrets.POSTGRES_SERVER }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          - POSTGRES_USER=postgres
+          - POSTGRES_PASSWORD=postgres
+          - POSTGRES_SERVER=15.237.96.214
+          - POSTGRES_DB=postgres
         run: uvicorn api.routes.main:app & pytest # this must be changed
 
   # continuous-deployment:
