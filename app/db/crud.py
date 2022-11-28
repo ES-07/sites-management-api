@@ -77,6 +77,8 @@ class PropertyOwnerRepository:
         if owner is not None:
             db.delete(owner)
             db.commit()
+    
+    
 
 
 class BuildingRepository:
@@ -110,6 +112,16 @@ class BuildingRepository:
             db.delete(building)
             db.commit()
 
+    @staticmethod
+    def find_by_owner_id(db: Session, owner_id: int):
+        return db.query(Building).filter(Building.owner_id == owner_id).all()
+
+    @staticmethod
+    def find_by_cognito_id(db: Session, owner_cognito: int):
+        owner = db.query(PropertyOwner).filter(PropertyOwner.cognito_id == owner_cognito).first()
+        if owner is not None:
+            owner_id = owner.id
+            return db.query(Building).filter(Building.owner_id == owner_id).all()
 
 class DeviceRepository:
     
@@ -141,6 +153,11 @@ class DeviceRepository:
         if device is not None:
             db.delete(device)
             db.commit()
+
+    @staticmethod
+    def find_by_building_id(db: Session, building_id: int):
+        return db.query(Device).filter(Device.building_id == building_id).all()
+
 
 
 
@@ -174,3 +191,16 @@ class IntrusionRepository:
         if intrusion is not None:
             db.delete(intrusion)
             db.commit()
+
+    @staticmethod
+    def find_by_device_id(db: Session, device_id: int):
+        return db.query(Intrusion).filter(Intrusion.device_id == device_id).all()
+
+    @staticmethod
+    def find_by_building_id(db: Session, building_id: int):
+        return db.query(Intrusion).filter(Intrusion.building_id == building_id).all()
+
+    @staticmethod
+    def find_by_owner_id(db: Session, owner_id: int):
+        list_buildings_id = [building.id for building in BuildingRepository.find_by_owner_id(db, owner_id)]
+        return db.query(Intrusion).filter(Intrusion.building_id.in_(list_buildings_id)).all()
