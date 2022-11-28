@@ -58,6 +58,16 @@ def find_by_id(id: str, db: Session = Depends(get_db)):
         )
     return schemas.PropertyOwnerResponse.from_orm(owner)
 
+@app.get("/owners/cognito/{id}", response_model=schemas.PropertyOwnerResponse)
+def find_by_cognito_id(id: str, db: Session = Depends(get_db)):
+    owner = PropertyOwnerRepository.find_by_cognito_id(db, id)
+    if not owner:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Owner not found"
+        )
+    return schemas.PropertyOwnerResponse.from_orm(owner)
+
+
 @app.get("/owners/email/{email}", response_model=schemas.PropertyOwnerResponse)
 def find_by_email(email: str, db: Session = Depends(get_db)):
     owner = PropertyOwnerRepository.find_by_email(db, email)
@@ -175,6 +185,18 @@ def find_by_owner_id(id: int, db: Session = Depends(get_db)):
     if not buildings:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="This owner has no buildings"
+
+        )
+    return [schemas.BuildingResponse.from_orm(building) for building in buildings]
+
+@app.get("/buildings/cognito/{id}", response_model=List[schemas.BuildingResponse])
+def find_by_cognito_id(id: str, db: Session = Depends(get_db)):
+    print("here")
+    buildings = BuildingRepository.find_by_cognito_id(db, id)
+    print("these are the buildings", buildings)
+    if not buildings:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="This owner has no buildings"
         )
     return [schemas.BuildingResponse.from_orm(building) for building in buildings]
 
@@ -195,6 +217,8 @@ def update(id: int, request: schemas.BuildingRequest, db: Session = Depends(get_
         )
     building = BuildingRepository.save(db, Building(**request.dict()))
     return schemas.BuildingResponse.from_orm(building)  
+
+
 
 
 ############# DEVICE #############
@@ -227,6 +251,7 @@ def find_by_building_id(id: int, db: Session = Depends(get_db)):
             status_code=status.HTTP_404_NOT_FOUND, detail="This building has no devices"
         )
     return [schemas.DeviceResponse.from_orm(device) for device in devices]
+
 
 
 @app.delete("/devices/{id}", status_code=status.HTTP_204_NO_CONTENT)
