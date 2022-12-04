@@ -51,7 +51,7 @@ def find_all(db: Session = Depends(get_db)):
 
 @app.get("/owners/{id}", response_model=schemas.PropertyOwnerResponse)
 def find_by_id(id: str, db: Session = Depends(get_db)):
-    owner = PropertyOwnerRepository.find_by_cognito_id(db, id)
+    owner = PropertyOwnerRepository.find_by_id(db, id)
     if not owner:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Owner not found"
@@ -92,7 +92,7 @@ def update(id: int, request: schemas.PropertyOwnerRequest, db: Session = Depends
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Owner not found"
         )
-    owner = PropertyOwnerRepository.save(db,PropertyOwner(**request.dict()) )
+    owner = PropertyOwnerRepository.save(db,PropertyOwner(id=id,**request.dict()) )
     return schemas.PropertyOwnerResponse.from_orm(owner)  
 
 
@@ -152,7 +152,7 @@ def update(id: int, request: schemas.SecurityManagerRequest, db: Session = Depen
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Security Manager not found"
         )
-    manager = SecurityManagerRepository.save(db, SecurityManager(**request.dict()))
+    manager = SecurityManagerRepository.save(db, SecurityManager(id=id, **request.dict()))
     return schemas.SecurityManagerResponse.from_orm(manager)  
 
 
@@ -215,7 +215,7 @@ def update(id: int, request: schemas.BuildingRequest, db: Session = Depends(get_
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Building not found"
         )
-    building = BuildingRepository.save(db, Building(**request.dict()))
+    building = BuildingRepository.save(db, Building(id=id,**request.dict()))
     return schemas.BuildingResponse.from_orm(building)  
 
 
@@ -269,7 +269,7 @@ def update(id: int, request: schemas.DeviceRequest, db: Session = Depends(get_db
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Device not found"
         )
-    device = DeviceRepository.save(db, Device(**request.dict()))
+    device = DeviceRepository.save(db, Device(id=id,**request.dict()))
     return schemas.DeviceResponse.from_orm(device)  
     
 
@@ -337,6 +337,6 @@ def update(id: int, request: schemas.IntrusionRequest, db: Session = Depends(get
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Intrusion not found"
         )
-    intrusion = IntrusionRepository.save(db, Intrusion(**request.dict()))
+    intrusion = IntrusionRepository.save(db, Intrusion(id=id,**request.dict()))
     return schemas.IntrusionResponse.from_orm(intrusion)  
 
