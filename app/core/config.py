@@ -15,8 +15,12 @@ POSTGRES_SERVER = config("POSTGRES_SERVER", cast=str, default="postgres")
 POSTGRES_PORT = config("POSTGRES_PORT", cast=str, default="5432")
 POSTGRES_DB = config("POSTGRES_DB", cast=str, default="postgres")
 
+
+
 DATABASE_URL = config(
   "DATABASE_URL",
   cast=str,
   default=f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}"
 )
+
+print(DATABASE_URL)
