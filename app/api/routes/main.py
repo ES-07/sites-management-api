@@ -1,7 +1,6 @@
-from telnetlib import SE
-from fastapi import FastAPI, Depends, HTTPException, status, Response,  Response, Request
+
+from fastapi import FastAPI, Depends, HTTPException, status, Response,  Response, APIRouter
 from sqlalchemy.orm import Session
-from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from core import config
 from models.schemas import HealthResponse
@@ -14,11 +13,13 @@ from pydantic import BaseModel
 
 Base.metadata.create_all(bind=engine)
 
+BASE_PREFIX = "/sites-management-api"
+
 app = FastAPI(
     title=config.PROJECT_NAME,
     version=config.VERSION,    
     openapi_url="/openapi.json",
-    docs_url="/docs",)  
+    docs_url="/docs")  
 
 app.add_middleware(
     CORSMiddleware,
@@ -27,29 +28,30 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 ############# OWNERS #############
 
 
-@app.get("/", response_model=HealthResponse)
+@app.get(BASE_PREFIX + '/', response_model=HealthResponse)
 async def health():
     return HealthResponse(status="Ok")
 
-@app.get('/hello')
+@app.get(BASE_PREFIX + '/hello')
 def hello_world():
     return {'msg': 'hello!'}
 
-@app.post("/owners", response_model=schemas.PropertyOwnerResponse, status_code=status.HTTP_201_CREATED)
+@app.get(BASE_PREFIX + '/owners', response_model=schemas.PropertyOwnerResponse, status_code=status.HTTP_201_CREATED)
 def create_owners(request: schemas.PropertyOwnerRequest, db: Session = Depends(get_db)):
     #solucao trolha, do over again 
     owner = PropertyOwnerRepository.save(db,PropertyOwner(**request.dict()) )
     return schemas.PropertyOwnerResponse.from_orm(owner)
 
-@app.get("/owners", response_model=List[schemas.PropertyOwnerResponse])
+@app.get(BASE_PREFIX + '/owners', response_model=List[schemas.PropertyOwnerResponse])
 def find_all(db: Session = Depends(get_db)):
     owners = PropertyOwnerRepository.find_all(db)
     return [schemas.PropertyOwnerResponse.from_orm(owner) for owner in owners]
 
-@app.get("/owners/{id}", response_model=schemas.PropertyOwnerResponse)
+@app.get(BASE_PREFIX + '/owners/{id}', response_model=schemas.PropertyOwnerResponse)
 def find_by_id(id: int, db: Session = Depends(get_db)):
     owner = PropertyOwnerRepository.find_by_id(db, id)
     if not owner:
@@ -58,7 +60,7 @@ def find_by_id(id: int, db: Session = Depends(get_db)):
         )
     return schemas.PropertyOwnerResponse.from_orm(owner)
 
-@app.delete("/owners/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@app.delete("sites-management-api/owners/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_by_id(id: int, db: Session = Depends(get_db)):
     if not PropertyOwnerRepository.exists_by_id(db, id):
         raise HTTPException(
@@ -67,7 +69,7 @@ def delete_by_id(id: int, db: Session = Depends(get_db)):
     PropertyOwnerRepository.delete_by_id(db, id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-@app.put("/owners/{id}", response_model=schemas.PropertyOwnerResponse)
+@app.put("sites-management-api/owners/{id}", response_model=schemas.PropertyOwnerResponse)
 def update(id: int, request: schemas.PropertyOwnerRequest, db: Session = Depends(get_db)):
     if not PropertyOwnerRepository.exists_by_id(db, id):
         raise HTTPException(
@@ -81,7 +83,7 @@ class User(BaseModel):
     email: str
     password: str
 
-@app.post("/owners/login")
+@app.get(BASE_PREFIX + '/owners/login')
 async def login_owner(user: User, db: Session = Depends(get_db)):
     owner: PropertyOwner = PropertyOwnerRepository.find_by_email(db, user.email)
     if not owner:
@@ -99,17 +101,17 @@ async def login_owner(user: User, db: Session = Depends(get_db)):
 
 ############# SECURITY MANAGER #############
 
-@app.post("/managers", response_model=schemas.SecurityManagerResponse, status_code=status.HTTP_201_CREATED)
+@app.get(BASE_PREFIX + '/managers', response_model=schemas.SecurityManagerResponse, status_code=status.HTTP_201_CREATED)
 def create_managers(request: schemas.SecurityManagerRequest, db: Session = Depends(get_db)):
     manager = SecurityManagerRepository.save(db,SecurityManager(**request.dict()) )
     return schemas.SecurityManagerResponse.from_orm(manager)
 
-@app.get("/managers", response_model=List[schemas.SecurityManagerResponse])
+@app.get(BASE_PREFIX + '/managers', response_model=List[schemas.SecurityManagerResponse])
 def find_all(db: Session = Depends(get_db)):
     managers = SecurityManagerRepository.find_all(db)
     return [schemas.SecurityManagerResponse.from_orm(manager) for manager in managers]
 
-@app.get("/managers/{id}", response_model=schemas.SecurityManagerResponse)
+@app.get(BASE_PREFIX + '/managers/{id}', response_model=schemas.SecurityManagerResponse)
 def find_by_id(id: int, db: Session = Depends(get_db)):
     manager = SecurityManagerRepository.find_by_id(db, id)
     if not manager:
@@ -118,7 +120,7 @@ def find_by_id(id: int, db: Session = Depends(get_db)):
         )
     return schemas.SecurityManagerResponse.from_orm(manager)
 
-@app.delete("/managers/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@app.delete("sites-management-api/managers/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_by_id(id: int, db: Session = Depends(get_db)):
     if not SecurityManagerRepository.exists_by_id(db, id):
         raise HTTPException(
@@ -127,7 +129,7 @@ def delete_by_id(id: int, db: Session = Depends(get_db)):
     SecurityManagerRepository.delete_by_id(db, id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-@app.put("/managers/{id}", response_model=schemas.SecurityManagerResponse)
+@app.put("sites-management-api/managers/{id}", response_model=schemas.SecurityManagerResponse)
 def update(id: int, request: schemas.SecurityManagerRequest, db: Session = Depends(get_db)):
     if not SecurityManagerRepository.exists_by_id(db, id):
         raise HTTPException(
@@ -139,17 +141,17 @@ def update(id: int, request: schemas.SecurityManagerRequest, db: Session = Depen
 
 ############# BUILDINGS #############
 
-@app.post("/buildings", response_model=schemas.BuildingResponse, status_code=status.HTTP_201_CREATED)
+@app.get(BASE_PREFIX + '/buildings', response_model=schemas.BuildingResponse, status_code=status.HTTP_201_CREATED)
 def create_buildings(request: schemas.BuildingRequest, db: Session = Depends(get_db)):
     building = BuildingRepository.save(db,Building(**request.dict()) )
     return schemas.BuildingResponse.from_orm(building)
 
-@app.get("/buildings", response_model=List[schemas.BuildingResponse])
+@app.get(BASE_PREFIX + '/buildings', response_model=List[schemas.BuildingResponse])
 def find_all(db: Session = Depends(get_db)):
     buildings = BuildingRepository.find_all(db)
     return [schemas.BuildingResponse.from_orm(building) for building in buildings]
 
-@app.get("/buildings/{id}", response_model=schemas.BuildingResponse)
+@app.get(BASE_PREFIX + '/buildings/{id}', response_model=schemas.BuildingResponse)
 def find_by_id(id: int, db: Session = Depends(get_db)):
     building = BuildingRepository.find_by_id(db, id)
     if not building:
@@ -158,7 +160,7 @@ def find_by_id(id: int, db: Session = Depends(get_db)):
         )
     return schemas.BuildingResponse.from_orm(building)
 
-@app.delete("/buildings/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@app.delete("sites-management-api/buildings/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_by_id(id: int, db: Session = Depends(get_db)):
     if not BuildingRepository.exists_by_id(db, id):
         raise HTTPException(
@@ -167,7 +169,7 @@ def delete_by_id(id: int, db: Session = Depends(get_db)):
     BuildingRepository.delete_by_id(db, id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-@app.put("/buildings/{id}", response_model=schemas.BuildingResponse)
+@app.put("sites-management-api/buildings/{id}", response_model=schemas.BuildingResponse)
 def update(id: int, request: schemas.BuildingRequest, db: Session = Depends(get_db)):
     if not BuildingRepository.exists_by_id(db, id):
         raise HTTPException(
@@ -180,17 +182,17 @@ def update(id: int, request: schemas.BuildingRequest, db: Session = Depends(get_
 
 ############# DEVICE #############
 
-@app.post("/devices", response_model=schemas.DeviceResponse, status_code=status.HTTP_201_CREATED)
+@app.get(BASE_PREFIX + '/devices', response_model=schemas.DeviceResponse, status_code=status.HTTP_201_CREATED)
 def create_devices(request: schemas.DeviceRequest, db: Session = Depends(get_db)):
     device = DeviceRepository.save(db,Device(**request.dict()) )
     return schemas.DeviceResponse.from_orm(device)
 
-@app.get("/devices", response_model=List[schemas.DeviceResponse])
+@app.get(BASE_PREFIX + '/devices', response_model=List[schemas.DeviceResponse])
 def find_all(db: Session = Depends(get_db)):
     devices = DeviceRepository.find_all(db)
     return [schemas.DeviceResponse.from_orm(device) for device in devices]
 
-@app.get("/devices/{id}", response_model=schemas.DeviceResponse)
+@app.get(BASE_PREFIX + '/devices/{id}', response_model=schemas.DeviceResponse)
 def find_by_id(id: int, db: Session = Depends(get_db)):
     device = DeviceRepository.find_by_id(db, id)
     if not device:
@@ -199,7 +201,7 @@ def find_by_id(id: int, db: Session = Depends(get_db)):
         )
     return schemas.DeviceResponse.from_orm(device)
 
-@app.delete("/devices/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@app.delete("sites-management-api/devices/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_by_id(id: int, db: Session = Depends(get_db)):
     if not DeviceRepository.exists_by_id(db, id):
         raise HTTPException(
@@ -208,7 +210,7 @@ def delete_by_id(id: int, db: Session = Depends(get_db)):
     DeviceRepository.delete_by_id(db, id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-@app.put("/devices/{id}", response_model=schemas.DeviceResponse)
+@app.put("sites-management-api/devices/{id}", response_model=schemas.DeviceResponse)
 def update(id: int, request: schemas.DeviceRequest, db: Session = Depends(get_db)):
     if not DeviceRepository.exists_by_id(db, id):
         raise HTTPException(
@@ -220,17 +222,17 @@ def update(id: int, request: schemas.DeviceRequest, db: Session = Depends(get_db
 
 ############# INTRUSION #############
 
-@app.post("/intrusions", response_model=schemas.IntrusionResponse, status_code=status.HTTP_201_CREATED)
+@app.get(BASE_PREFIX + '/intrusions', response_model=schemas.IntrusionResponse, status_code=status.HTTP_201_CREATED)
 def create_intrusions(request: schemas.IntrusionRequest, db: Session = Depends(get_db)):
     intrusion = IntrusionRepository.save(db,Intrusion(**request.dict()) )
     return schemas.IntrusionResponse.from_orm(intrusion)
 
-@app.get("/intrusions", response_model=List[schemas.IntrusionResponse])
+@app.get(BASE_PREFIX + '/intrusions', response_model=List[schemas.IntrusionResponse])
 def find_all(db: Session = Depends(get_db)):
     intrusions = IntrusionRepository.find_all(db)
     return [schemas.IntrusionResponse.from_orm(intrusion) for intrusion in intrusions]
 
-@app.get("/intrusions/{id}", response_model=schemas.IntrusionResponse)
+@app.get(BASE_PREFIX + '/intrusions/{id}', response_model=schemas.IntrusionResponse)
 def find_by_id(id: int, db: Session = Depends(get_db)):
     intrusion = IntrusionRepository.find_by_id(db, id)
     if not intrusion:
@@ -239,7 +241,7 @@ def find_by_id(id: int, db: Session = Depends(get_db)):
         )
     return schemas.IntrusionResponse.from_orm(intrusion)
 
-@app.delete("/intrusions/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@app.delete("sites-management-api/intrusions/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_by_id(id: int, db: Session = Depends(get_db)):
     if not IntrusionRepository.exists_by_id(db, id):
         raise HTTPException(
@@ -248,7 +250,7 @@ def delete_by_id(id: int, db: Session = Depends(get_db)):
     IntrusionRepository.delete_by_id(db, id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-@app.put("/intrusions/{id}", response_model=schemas.IntrusionResponse)
+@app.put("sites-management-api/intrusions/{id}", response_model=schemas.IntrusionResponse)
 def update(id: int, request: schemas.IntrusionRequest, db: Session = Depends(get_db)):
     if not IntrusionRepository.exists_by_id(db, id):
         raise HTTPException(
