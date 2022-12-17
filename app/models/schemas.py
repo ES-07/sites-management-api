@@ -29,6 +29,7 @@ class PersonBase(BaseModel):
     address: str
     cellphone : str
     birthday: date 
+    cognito_id: str
 
 class PersonRequest(PersonBase):
     pass

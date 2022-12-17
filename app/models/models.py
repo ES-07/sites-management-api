@@ -16,6 +16,7 @@ class Person(Base):
     address = Column(String)
     cellphone = Column(String)
     birthday = Column(Date)
+    cognito_id = Column(String)
     property_owners = relationship("PropertyOwner", back_populates="person", cascade="delete, merge, save-update",passive_deletes=True)
     security_managers = relationship("SecurityManager", back_populates="person", cascade="delete, merge, save-update", passive_deletes=True)
 
