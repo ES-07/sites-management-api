@@ -40,7 +40,7 @@ async def health():
 def hello_world():
     return {'msg': 'hello!'}
 
-@app.get(BASE_PREFIX + '/owners', response_model=schemas.PropertyOwnerResponse, status_code=status.HTTP_201_CREATED)
+@app.post(BASE_PREFIX + '/owners', response_model=schemas.PropertyOwnerResponse, status_code=status.HTTP_201_CREATED)
 def create_owners(request: schemas.PropertyOwnerRequest, db: Session = Depends(get_db)):
     #solucao trolha, do over again 
     owner = PropertyOwnerRepository.save(db,PropertyOwner(**request.dict()) )
@@ -102,7 +102,7 @@ class User(BaseModel):
     email: str
     password: str
 
-@app.get(BASE_PREFIX + '/owners/login')
+@app.post(BASE_PREFIX + '/owners/login')
 async def login_owner(user: User, db: Session = Depends(get_db)):
     owner: PropertyOwner = PropertyOwnerRepository.find_by_email(db, user.email)
     if not owner:
@@ -120,7 +120,7 @@ async def login_owner(user: User, db: Session = Depends(get_db)):
 
 ############# SECURITY MANAGER #############
 
-@app.get(BASE_PREFIX + '/managers', response_model=schemas.SecurityManagerResponse, status_code=status.HTTP_201_CREATED)
+@app.post(BASE_PREFIX + '/managers', response_model=schemas.SecurityManagerResponse, status_code=status.HTTP_201_CREATED)
 def create_managers(request: schemas.SecurityManagerRequest, db: Session = Depends(get_db)):
     manager = SecurityManagerRepository.save(db,SecurityManager(**request.dict()) )
     return schemas.SecurityManagerResponse.from_orm(manager)
@@ -160,7 +160,7 @@ def update(id: int, request: schemas.SecurityManagerRequest, db: Session = Depen
 
 ############# BUILDINGS #############
 
-@app.get(BASE_PREFIX + '/buildings', response_model=schemas.BuildingResponse, status_code=status.HTTP_201_CREATED)
+@app.post(BASE_PREFIX + '/buildings', response_model=schemas.BuildingResponse, status_code=status.HTTP_201_CREATED)
 def create_buildings(request: schemas.BuildingRequest, db: Session = Depends(get_db)):
     building = BuildingRepository.save(db,Building(**request.dict()) )
     return schemas.BuildingResponse.from_orm(building)
@@ -225,7 +225,7 @@ def update(id: int, request: schemas.BuildingRequest, db: Session = Depends(get_
 
 ############# DEVICE #############
 
-@app.get(BASE_PREFIX + '/devices', response_model=schemas.DeviceResponse, status_code=status.HTTP_201_CREATED)
+@app.post(BASE_PREFIX + '/devices', response_model=schemas.DeviceResponse, status_code=status.HTTP_201_CREATED)
 def create_devices(request: schemas.DeviceRequest, db: Session = Depends(get_db)):
     device = DeviceRepository.save(db,Device(**request.dict()) )
     return schemas.DeviceResponse.from_orm(device)
@@ -276,7 +276,7 @@ def update(id: int, request: schemas.DeviceRequest, db: Session = Depends(get_db
 
 ############# INTRUSION #############
 
-@app.get(BASE_PREFIX + '/intrusions', response_model=schemas.IntrusionResponse, status_code=status.HTTP_201_CREATED)
+@app.post(BASE_PREFIX + '/intrusions', response_model=schemas.IntrusionResponse, status_code=status.HTTP_201_CREATED)
 def create_intrusions(request: schemas.IntrusionRequest, db: Session = Depends(get_db)):
     intrusion = IntrusionRepository.save(db,Intrusion(**request.dict()) )
     return schemas.IntrusionResponse.from_orm(intrusion)
