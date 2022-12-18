@@ -18,8 +18,8 @@ BASE_PREFIX = "/sites-management-api"
 app = FastAPI(
     title=config.PROJECT_NAME,
     version=config.VERSION,    
-    openapi_url="/openapi.json",
-    docs_url="/docs")  
+    openapi_url=BASE_PREFIX + "/openapi.json",
+    docs_url=BASE_PREFIX + "/docs")  
 
 app.add_middleware(
     CORSMiddleware,
